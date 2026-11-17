@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-doc-id="template-padrao">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ficha de Clínica Médica — Roteiro dos 7 Pilares</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonte Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Tipografia base e suavização */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Auto-expansão limpa sem barras de rolagem internas */
+    textarea.auto-expand {
+      resize: none;
+      overflow: hidden;
+      min-height: 54px;
+      line-height: 1.5;
+    }
+
+    textarea.auto-expand-sm {
+      resize: none;
+      overflow: hidden;
+      min-height: 38px;
+      line-height: 1.45;
+    }
+
+    /* Espelho de texto oculto na tela e exibido apenas na impressão para evitar cortes */
+    .print-mirror {
+      display: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+
+    .print-mirror:empty::before {
+      content: " ";
+      display: inline-block;
+      min-height: 1.4em;
+    }
+
+    /* Regras de Impressão Otimizadas para Folha A4 */
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+
+    @media print {
+      *,
+      *::before,
+      *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 9.5pt !important;
+        color: #1e293b !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .screen-control {
+        display: none !important;
+      }
+
+      .print-mirror {
+        display: block !important;
+        min-height: 22px;
+        padding: 4px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background-color: #ffffff !important;
+        font-size: 9.5pt !important;
+      }
+
+      .print-mirror-title {
+        display: block !important;
+        font-size: 15pt !important;
+        font-weight: 700 !important;
+        color: #0f766e !important;
+        border: none !important;
+        border-bottom: 1.5px solid #cbd5e1 !important;
+        border-radius: 0 !important;
+        padding: 2px 0 !important;
+      }
+
+      .print-mirror-inline {
+        display: inline-block !important;
+        min-width: 110px;
+        border: none !important;
+        border-bottom: 1px solid #64748b !important;
+        border-radius: 0 !important;
+        padding: 0 4px !important;
+        min-height: 16px !important;
+        vertical-align: baseline;
+      }
+
+      .sheet-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .pillar-card {
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 10px !important;
+        padding: 10px 12px !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+      }
+
+      .pillar-header {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+        margin-bottom: 6px !important;
+        padding-bottom: 4px !important;
+      }
+
+      .field-block,
+      .diff-row,
+      .trigger-card {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .red-flag-box {
+        background-color: #fef2f2 !important;
+        border-color: #fca5a5 !important;
+        border-left: 3.5px solid #dc2626 !important;
+      }
+
+      .alert-box {
+        background-color: #fffbeb !important;
+        border-color: #fcd34d !important;
+        border-left: 3.5px solid #d97706 !important;
+      }
+
+      .trigger-card {
+        background-color: #f0fdfa !important;
+        border: 1.5px solid #0f766e !important;
+        padding: 10px 12px !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f1f5f9] text-[#1e293b] pb-16">
+
+  <!-- Barra Superior de Status e Utilitários (Oculta na Impressão) -->
+  <header class="no-print sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#0f766e] text-white font-bold text-sm shadow-xs">
+          CM
+        </span>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-[#0f766e]">Clínica Médica • Illness Script</p>
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span id="save-dot" class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span id="save-status">Rascunho salvo automaticamente</span>
+            <span class="text-slate-300">•</span>
+            <span id="progress-counter" class="font-medium text-slate-600">0/23 campos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="btn-open-clear"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-red-50 hover:text-red-700 border border-slate-200 hover:border-red-200 transition-colors cursor-pointer"
+          title="Limpar todos os campos para iniciar uma nova doença"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span>Limpar Ficha</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal da Folha de Estudo -->
+  <main class="sheet-container max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-5">
+
+    <!-- Cartão de Cabeçalho da Doença -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="h-2 bg-[#0f766e] -mx-5 -mt-5 mb-4 hidden print:block"></div>
+      <div class="border-t-4 border-[#0f766e] p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="text-xs font-bold uppercase tracking-widest text-[#0f766e]">
+            Ficha de Clínica Médica — Roteiro dos 7 Pilares
+          </span>
+          <span class="text-xs text-slate-400 hidden sm:inline">Estudo Orientado à Conduta</span>
+        </div>
+
+        <!-- Nome da Doença (Título Principal Editável) -->
+        <div class="mb-4">
+          <label for="doenca_nome" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+            Nome da Doença / Síndrome
+          </label>
+          <input
+            type="text"
+            id="doenca_nome"
+            data-field="doenca_nome"
+            placeholder="Ex.: Insuficiência Cardíaca com Fração de Ejeção Reduzida (ICFEr)"
+            class="screen-control w-full text-xl sm:text-2xl font-bold text-[#1e293b] placeholder:text-slate-300 bg-slate-50/70 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          />
+          <div class="print-mirror print-mirror-title" data-mirror="doenca_nome"></div>
+        </div>
+
+        <!-- Metadados: Área / Sistema e Diretriz-base -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="area_sistema" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+              Área / Sistema
+            </label>
+            <input
+              type="text"
+              id="area_sistema"
+              data-field="area_sistema"
+              list="lista-areas"
+              placeholder="Ex.: Cardiologia, Pneumologia, Endocrinologia..."
+              class="screen-control w-full text-sm font-medium text-slate-800 placeholder:text-slate-400 bg-slate-50/70 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3 py-2 outline-none transition-all"
+            />
+            <datalist id="lista-areas">
+              <option value="Cardiologia"></option>
+              <option value="Pneumologia"></option>
+              <option value="Endocrinologia e Metabologia"></option>
+              <option value="Gastroenterologia e Hepatologia"></option>
+              <option value="Nefrologia"></option>
+              <option value="Infectologia"></option>
+              <option value="Neurologia"></option>
+              <option value="Reumatologia"></option>
+              <option value="Hematologia"></option>
+            </datalist>
+            <div class="print-mirror" data-mirror="area_sistema"></div>
+          </div>
+
+          <div>
+            <label for="diretriz_base" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+              Diretriz-Base / Referência
+            </label>
+            <input
+              type="text"
+              id="diretriz_base"
+              data-field="diretriz_base"
+              list="lista-diretrizes"
+              placeholder="Ex.: SBC, SBPT, SBD, PCDT-MS, KDIGO..."
+              class="screen-control w-full text-sm font-medium text-slate-800 placeholder:text-slate-400 bg-slate-50/70 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3 py-2 outline-none transition-all"
+            />
+            <datalist id="lista-diretrizes">
+              <option value="SBC (Sociedade Brasileira de Cardiologia)"></option>
+              <option value="SBPT (Sociedade Brasileira de Pneumologia e Tisiologia)"></option>
+              <option value="SBD (Sociedade Brasileira de Diabetes)"></option>
+              <option value="PCDT - Ministério da Saúde / SUS"></option>
+              <option value="KDIGO / SBN (Nefrologia)"></option>
+              <option value="SBH / AASLD (Hepatologia)"></option>
+              <option value="SBR / ACR / EULAR (Reumatologia)"></option>
+            </datalist>
+            <div class="print-mirror" data-mirror="diretriz_base"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 1: Perfil Epidemiológico e Fatores de Risco -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          1
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Perfil Epidemiológico e Fatores de Risco</h2>
+          <p class="text-xs text-slate-500 no-print">Probabilidade pré-teste logo na identificação da anamnese</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="field-block">
+          <label for="p1_paciente_tipico" class="block text-sm font-semibold text-slate-700 mb-1">
+            Paciente típico
+            <span class="font-normal text-xs text-slate-500 ml-1">(faixa etária, sexo predominante, perfil clínico)</span>
+          </label>
+          <textarea
+            id="p1_paciente_tipico"
+            data-field="p1_paciente_tipico"
+            rows="2"
+            placeholder="Ex.: Homens e mulheres > 60 anos, hipertensos de longa data ou pós-IAM..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p1_paciente_tipico"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p1_fatores_risco" class="block text-sm font-semibold text-slate-700 mb-1">
+            Fatores de risco principais
+            <span class="font-normal text-xs text-slate-500 ml-1">(comorbidades, hábitos de vida, histórico familiar)</span>
+          </label>
+          <textarea
+            id="p1_fatores_risco"
+            data-field="p1_fatores_risco"
+            rows="2"
+            placeholder="Ex.: HAS, DM2, dislipidemia, tabagismo, etilismo, obesidade, história familiar precoce..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p1_fatores_risco"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p1_gatilhos" class="block text-sm font-semibold text-slate-700 mb-1">
+            Gatilhos / Exposições
+            <span class="font-normal text-xs text-slate-500 ml-1">(infecções prévias, fármacos recentes, viagens, ocupação)</span>
+          </label>
+          <textarea
+            id="p1_gatilhos"
+            data-field="p1_gatilhos"
+            rows="2"
+            placeholder="Ex.: Má adesão medicamentosa, abuso de sal/líquidos, infecção respiratória, uso de AINEs, exposição ocupacional..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p1_gatilhos"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 2: Fisiopatologia Aplicada -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          2
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Fisiopatologia Aplicada — O "Porquê" Clínico</h2>
+          <p class="text-xs text-slate-500 no-print">Mecanismo central que explica os achados e justifica o tratamento</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="field-block">
+          <label for="p2_mecanismo" class="block text-sm font-semibold text-slate-700 mb-1">
+            Mecanismo central
+            <span class="font-normal text-xs text-slate-500 ml-1">(resumo direto do processo patológico)</span>
+          </label>
+          <textarea
+            id="p2_mecanismo"
+            data-field="p2_mecanismo"
+            rows="2"
+            placeholder="Ex.: Injúria miocárdica -> queda do débito cardíaco -> ativação neuro-humoral sustentada (SRAA e SNS) e remodelamento ventricular..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p2_mecanismo"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p2_correlacao" class="block text-sm font-semibold text-slate-700 mb-1">
+            Correlação clínica com semiologia
+            <span class="font-normal text-xs text-slate-500 ml-1">(como a alteração gera os sintomas e sinais físicos)</span>
+          </label>
+          <textarea
+            id="p2_correlacao"
+            data-field="p2_correlacao"
+            rows="2"
+            placeholder="Ex.: Congestão venocapilar pulmonar -> ortopneia, DPN e estertores crepitantes; congestão sistêmica -> turgência jugular e edema de MMII..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p2_correlacao"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p2_alvo" class="block text-sm font-semibold text-slate-700 mb-1">
+            Alvo terapêutico
+            <span class="font-normal text-xs text-slate-500 ml-1">(onde os fármacos de 1ª linha atuam)</span>
+          </label>
+          <textarea
+            id="p2_alvo"
+            data-field="p2_alvo"
+            rows="2"
+            placeholder="Ex.: Bloqueio do SRAA (IECA/BRA/INRA), bloqueio beta-adrenérgico, antagonismo mineralocorticoide e inibição SGLT2..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p2_alvo"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 3: Quadro Clínico: Achados Cardeais e Red Flags -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          3
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Quadro Clínico: Achados Cardeais e Red Flags</h2>
+          <p class="text-xs text-slate-500 no-print">Apresentação semiológica clássica e sinais de gravidade imediata</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="field-block">
+          <label for="p3_sintomas" class="block text-sm font-semibold text-slate-700 mb-1">
+            Sintomas-guia na anamnese
+            <span class="font-normal text-xs text-slate-500 ml-1">(queixa principal e sintomas associados)</span>
+          </label>
+          <textarea
+            id="p3_sintomas"
+            data-field="p3_sintomas"
+            rows="2"
+            placeholder="Ex.: Dispneia progressiva aos esforços, ortopneia, dispneia paroxística noturna, fadiga..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p3_sintomas"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p3_exame_fisico" class="block text-sm font-semibold text-slate-700 mb-1">
+            Achados do exame físico
+            <span class="font-normal text-xs text-slate-500 ml-1">(inspeção, palpação, percussão e ausculta)</span>
+          </label>
+          <textarea
+            id="p3_exame_fisico"
+            data-field="p3_exame_fisico"
+            rows="2"
+            placeholder="Ex.: Turgência jugular a 45°, refluxo hepatojugular, B3 audível, ictus desviado, estertores crepitantes bibasais, edema simétrico de MMII..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p3_exame_fisico"></div>
+        </div>
+
+        <!-- Destaque Sutil Avermelhado para Red Flags -->
+        <div class="field-block red-flag-box rounded-lg bg-red-50/70 border border-red-200 border-l-4 border-l-red-600 p-3.5">
+          <label for="p3_red_flags" class="flex items-center gap-1.5 text-sm font-bold text-red-900 mb-1">
+            <svg class="w-4 h-4 text-red-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>Sinais de alarme / Red Flags</span>
+            <span class="font-normal text-xs text-red-700 ml-1">(gravidade, instabilidade hemodinâmica, UTI)</span>
+          </label>
+          <textarea
+            id="p3_red_flags"
+            data-field="p3_red_flags"
+            rows="2"
+            placeholder="Ex.: Hipotensão (PAS < 90 mmHg), extremidades frias/má perfusão (perfil frio), rebaixamento do sensório, hipoxemia refratária, oligúria..."
+            class="screen-control auto-expand w-full text-sm text-slate-900 placeholder:text-red-300 bg-white/90 focus:bg-white border border-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p3_red_flags"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 4: Diagnóstico e Diagnósticos Diferenciais -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          4
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Diagnóstico e Diagnósticos Diferenciais</h2>
+          <p class="text-xs text-slate-500 no-print">Ordem racional de investigação, critérios validados e exclusão de diferenciais</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="field-block">
+            <label for="p4_exame_inicial" class="block text-sm font-semibold text-slate-700 mb-1">
+              Exame inicial (Triagem / PS / UBS)
+            </label>
+            <textarea
+              id="p4_exame_inicial"
+              data-field="p4_exame_inicial"
+              rows="2"
+              placeholder="Ex.: ECG, Radiografia de tórax e BNP / NT-proBNP..."
+              class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+            ></textarea>
+            <div class="print-mirror" data-mirror="p4_exame_inicial"></div>
+          </div>
+
+          <div class="field-block">
+            <label for="p4_padrao_ouro" class="block text-sm font-semibold text-slate-700 mb-1">
+              Padrão-ouro (Confirmação)
+            </label>
+            <textarea
+              id="p4_padrao_ouro"
+              data-field="p4_padrao_ouro"
+              rows="2"
+              placeholder="Ex.: Ecocardiograma transtorácico (avaliação de FEVE e função diastólica)..."
+              class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+            ></textarea>
+            <div class="print-mirror" data-mirror="p4_padrao_ouro"></div>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label for="p4_complementares" class="block text-sm font-semibold text-slate-700 mb-1">
+            Exames complementares de apoio
+            <span class="font-normal text-xs text-slate-500 ml-1">(laboratório, imagem e alterações esperadas)</span>
+          </label>
+          <textarea
+            id="p4_complementares"
+            data-field="p4_complementares"
+            rows="2"
+            placeholder="Ex.: Hemograma, função renal (Ur/Cr), eletrólitos (Na/K), TSH, perfil de ferro/ferritina, troponina..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p4_complementares"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p4_criterios" class="block text-sm font-semibold text-slate-700 mb-1">
+            Critérios / Escores diagnósticos
+            <span class="font-normal text-xs text-slate-500 ml-1">(ex.: Framingham, Light, Wells, Jones)</span>
+          </label>
+          <textarea
+            id="p4_criterios"
+            data-field="p4_criterios"
+            rows="2"
+            placeholder="Ex.: Critérios de Framingham (2 maiores OU 1 maior + 2 menores)..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p4_criterios"></div>
+        </div>
+
+        <!-- Top 3 Diagnósticos Diferenciais -->
+        <div class="pt-1">
+          <p class="text-sm font-semibold text-slate-700 mb-2">
+            Top 3 Diagnósticos Diferenciais
+            <span class="font-normal text-xs text-slate-500 ml-1">(doença que imita + achado clínico ou laboratorial que diferencia)</span>
+          </p>
+
+          <div class="space-y-2.5">
+            <!-- Diferencial 1 -->
+            <div class="diff-row grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
+              <div class="sm:col-span-4">
+                <label for="p4_diff1_nome" class="block text-xs font-semibold text-slate-600 mb-1">1. Diagnóstico Diferencial</label>
+                <textarea
+                  id="p4_diff1_nome"
+                  data-field="p4_diff1_nome"
+                  rows="1"
+                  placeholder="Ex.: DPOC exacerbada"
+                  class="screen-control auto-expand-sm w-full text-sm font-medium text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff1_nome"></div>
+              </div>
+              <div class="sm:col-span-8">
+                <label for="p4_diff1_distincao" class="block text-xs font-semibold text-slate-600 mb-1">Achado que diferencia</label>
+                <textarea
+                  id="p4_diff1_distincao"
+                  data-field="p4_diff1_distincao"
+                  rows="1"
+                  placeholder="Ex.: História de tabagismo pesado, sibilos difusos, hiperinsuflação no RX e BNP normal/baixo"
+                  class="screen-control auto-expand-sm w-full text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff1_distincao"></div>
+              </div>
+            </div>
+
+            <!-- Diferencial 2 -->
+            <div class="diff-row grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
+              <div class="sm:col-span-4">
+                <label for="p4_diff2_nome" class="block text-xs font-semibold text-slate-600 mb-1">2. Diagnóstico Diferencial</label>
+                <textarea
+                  id="p4_diff2_nome"
+                  data-field="p4_diff2_nome"
+                  rows="1"
+                  placeholder="Ex.: Tromboembolismo Pulmonar (TEP)"
+                  class="screen-control auto-expand-sm w-full text-sm font-medium text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff2_nome"></div>
+              </div>
+              <div class="sm:col-span-8">
+                <label for="p4_diff2_distincao" class="block text-xs font-semibold text-slate-600 mb-1">Achado que diferencia</label>
+                <textarea
+                  id="p4_diff2_distincao"
+                  data-field="p4_diff2_distincao"
+                  rows="1"
+                  placeholder="Ex.: Dispneia súbita com ausculta pulmonar limpa, dor pleurítica, fator pró-trombótico, angiotomografia positiva"
+                  class="screen-control auto-expand-sm w-full text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff2_distincao"></div>
+              </div>
+            </div>
+
+            <!-- Diferencial 3 -->
+            <div class="diff-row grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
+              <div class="sm:col-span-4">
+                <label for="p4_diff3_nome" class="block text-xs font-semibold text-slate-600 mb-1">3. Diagnóstico Diferencial</label>
+                <textarea
+                  id="p4_diff3_nome"
+                  data-field="p4_diff3_nome"
+                  rows="1"
+                  placeholder="Ex.: Síndrome Nefrótica / Cirrose"
+                  class="screen-control auto-expand-sm w-full text-sm font-medium text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff3_nome"></div>
+              </div>
+              <div class="sm:col-span-8">
+                <label for="p4_diff3_distincao" class="block text-xs font-semibold text-slate-600 mb-1">Achado que diferencia</label>
+                <textarea
+                  id="p4_diff3_distincao"
+                  data-field="p4_diff3_distincao"
+                  rows="1"
+                  placeholder="Ex.: Ausência de turgência jugular, hipoalbuminemia acentuada, proteinúria nefrótica ou estigmas de hepatopatia"
+                  class="screen-control auto-expand-sm w-full text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-200 focus:border-[#0f766e] rounded-md px-2.5 py-1.5 outline-none"
+                ></textarea>
+                <div class="print-mirror" data-mirror="p4_diff3_distincao"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 5: Classificações que Mudam a Conduta -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          5
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Classificações que Mudam a Conduta</h2>
+          <p class="text-xs text-slate-500 no-print">Apenas escalas que definem local de internação, terapêutica ou prognóstico</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="field-block">
+          <label for="p5_escala" class="block text-sm font-semibold text-slate-700 mb-1">
+            Escala / Estadiamento
+            <span class="font-normal text-xs text-slate-500 ml-1">(ex.: NYHA, GOLD, Child-Pugh, KDIGO, CURB-65)</span>
+          </label>
+          <textarea
+            id="p5_escala"
+            data-field="p5_escala"
+            rows="2"
+            placeholder="Ex.: Classificação Funcional NYHA (I a IV) e Perfis Hemodinâmicos de Stevenson (A, B, C, L)..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p5_escala"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p5_impacto" class="block text-sm font-semibold text-slate-700 mb-1">
+            Impacto prático na conduta / local de manejo
+          </label>
+          <textarea
+            id="p5_impacto"
+            data-field="p5_impacto"
+            rows="2"
+            placeholder="Ex.: Perfil B (quente e úmido) -> diurético IV + vasodilatador; Perfil C (frio e úmido) -> inotrópico + UTI..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p5_impacto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 6: Tratamento e Metas Terapêuticas -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          6
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Tratamento e Metas Terapêuticas</h2>
+          <p class="text-xs text-slate-500 no-print">Manejo agudo vs. manutenção, contraindicações críticas e alvos numéricos</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="field-block">
+          <label for="p6_fase_aguda" class="block text-sm font-semibold text-slate-700 mb-1">
+            Manejo na Fase Aguda / Emergência
+            <span class="font-normal text-xs text-slate-500 ml-1">(medidas iniciais e 1ª linha farmacológica / via / dose)</span>
+          </label>
+          <textarea
+            id="p6_fase_aguda"
+            data-field="p6_fase_aguda"
+            rows="2"
+            placeholder="Ex.: Cabeceira elevada, O2 suplementar se SpO2 < 90% ou VNI, Furosemida 20–40 mg IV em bolus, Nitroglicerina IV se PAS elevada..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p6_fase_aguda"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p6_manutencao" class="block text-sm font-semibold text-slate-700 mb-1">
+            Manejo Ambulatorial / Manutenção
+            <span class="font-normal text-xs text-slate-500 ml-1">(MEV / não farmacológico, 1ª linha e 2ª linha)</span>
+          </label>
+          <textarea
+            id="p6_manutencao"
+            data-field="p6_manutencao"
+            rows="2"
+            placeholder="Ex.: MEV, vacinação (Influenza/Pneumo/COVID). Quarteto fantástico: IECA/Sacubitril-Valsartana + Betabloqueador + Espironolactona + iSGLT2..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p6_manutencao"></div>
+        </div>
+
+        <div class="field-block alert-box rounded-lg bg-amber-50/70 border border-amber-200 border-l-4 border-l-amber-500 p-3.5">
+          <label for="p6_contraindicacoes" class="block text-sm font-bold text-amber-900 mb-1">
+            Contraindicações absolutas / Alertas
+            <span class="font-normal text-xs text-amber-800 ml-1">(o que NÃO prescrever e por quê)</span>
+          </label>
+          <textarea
+            id="p6_contraindicacoes"
+            data-field="p6_contraindicacoes"
+            rows="2"
+            placeholder="Ex.: Evitar AINEs e glitazonas (retenção hídrica), bloqueadores de canal de cálcio não diidropiridínicos na ICFEr, IECA + BRA juntos..."
+            class="screen-control auto-expand w-full text-sm text-slate-900 placeholder:text-amber-400 bg-white/90 focus:bg-white border border-amber-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p6_contraindicacoes"></div>
+        </div>
+
+        <div class="field-block">
+          <label for="p6_metas" class="block text-sm font-semibold text-slate-700 mb-1">
+            Metas terapêuticas numéricas
+            <span class="font-normal text-xs text-slate-500 ml-1">(alvos de PA, HbA1c, LDL, SpO₂, INR, etc.)</span>
+          </label>
+          <textarea
+            id="p6_metas"
+            data-field="p6_metas"
+            rows="2"
+            placeholder="Ex.: FC alvo 50–60 bpm em repouso, PA < 130x80 mmHg, estado euvolêmico, doses-alvo máximas toleradas..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p6_metas"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PILAR 7: Complicações e Seguimento -->
+    <section class="pillar-card bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
+      <div class="pillar-header flex items-center gap-3 pb-3 mb-4 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#0f766e]/10 text-[#0f766e] font-bold text-sm shrink-0">
+          7
+        </span>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#1e293b]">Complicações e Seguimento</h2>
+          <p class="text-xs text-slate-500 no-print">Desfechos agudos/crônicos e vigilância ambulatorial</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="field-block">
+            <label for="p7_agudas" class="block text-sm font-semibold text-slate-700 mb-1">
+              Complicações agudas
+            </label>
+            <textarea
+              id="p7_agudas"
+              data-field="p7_agudas"
+              rows="2"
+              placeholder="Ex.: Edema agudo de pulmão, choque cardiogênico, arritmias ventriculares malignas..."
+              class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+            ></textarea>
+            <div class="print-mirror" data-mirror="p7_agudas"></div>
+          </div>
+
+          <div class="field-block">
+            <label for="p7_cronicas" class="block text-sm font-semibold text-slate-700 mb-1">
+              Complicações crônicas
+            </label>
+            <textarea
+              id="p7_cronicas"
+              data-field="p7_cronicas"
+              rows="2"
+              placeholder="Ex.: Síndrome cardiorrenal, caquexia cardíaca, eventos tromboembólicos..."
+              class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+            ></textarea>
+            <div class="print-mirror" data-mirror="p7_cronicas"></div>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label for="p7_monitoramento" class="block text-sm font-semibold text-slate-700 mb-1">
+            Monitoramento / Seguimento
+            <span class="font-normal text-xs text-slate-500 ml-1">(exames de controle, periodicidade e efeitos adversos)</span>
+          </label>
+          <textarea
+            id="p7_monitoramento"
+            data-field="p7_monitoramento"
+            rows="2"
+            placeholder="Ex.: Peso diário, Cr e K+ 1–2 semanas após iniciar/titular IECA/espironolactona, reavaliação clínica precoce pós-alta..."
+            class="screen-control auto-expand w-full text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50/60 focus:bg-white border border-slate-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3.5 py-2.5 outline-none transition-all"
+          ></textarea>
+          <div class="print-mirror" data-mirror="p7_monitoramento"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUADRO FINAL: Gatilho Rápido — Revisão Ativa -->
+    <section class="trigger-card bg-teal-50/60 rounded-xl border-2 border-[#0f766e] shadow-xs p-5 sm:p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-5 h-5 text-[#0f766e] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <h2 class="text-sm sm:text-base font-bold uppercase tracking-wider text-[#0f766e]">
+          Gatilho Rápido — Revisão Ativa
+        </h2>
+      </div>
+
+      <div class="text-sm sm:text-[15px] leading-relaxed text-slate-800 flex flex-col gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1.5">
+          <span class="font-bold text-[#1e293b] shrink-0">Caso típico:</span>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="gatilho_caso"
+              data-field="gatilho_caso"
+              placeholder="Perfil do paciente + 2 achados-chave"
+              class="screen-control w-full text-sm text-slate-900 placeholder:text-teal-700/40 bg-white border border-teal-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3 py-1.5 outline-none"
+            />
+            <span class="print-mirror print-mirror-inline w-full" data-mirror="gatilho_caso"></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1.5">
+          <span class="font-bold text-[#0f766e] shrink-0">&rarr; Pedir:</span>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="gatilho_pedir"
+              data-field="gatilho_pedir"
+              placeholder="Exame inicial / confirmatório"
+              class="screen-control w-full text-sm text-slate-900 placeholder:text-teal-700/40 bg-white border border-teal-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3 py-1.5 outline-none"
+            />
+            <span class="print-mirror print-mirror-inline w-full" data-mirror="gatilho_pedir"></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1.5">
+          <span class="font-bold text-[#0f766e] shrink-0">&rarr; Conduta imediata:</span>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="gatilho_conduta"
+              data-field="gatilho_conduta"
+              placeholder="Tratamento de 1ª linha"
+              class="screen-control w-full text-sm text-slate-900 placeholder:text-teal-700/40 bg-white border border-teal-200 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 rounded-lg px-3 py-1.5 outline-none"
+            />
+            <span class="print-mirror print-mirror-inline w-full" data-mirror="gatilho_conduta"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Barra de Ações no Final da Página (Oculta na Impressão) -->
+    <section class="no-print bg-white rounded-xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h3 class="text-sm font-bold text-[#1e293b]">Exportar ou Imprimir Ficha</h3>
+          <p class="text-xs text-slate-500">Salve o arquivo editável para revisar offline, exporte em Markdown ou gere o PDF.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- Botão 1: Baixar Ficha (.HTML) -->
+        <button
+          type="button"
+          id="btn-download-html"
+          class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white bg-[#0f766e] hover:bg-[#115e59] active:scale-[0.99] shadow-xs transition-all cursor-pointer"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Baixar Ficha (.HTML)</span>
+        </button>
+
+        <!-- Botão 2: Baixar Resumo (.MD) -->
+        <button
+          type="button"
+          id="btn-download-md"
+          class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white bg-[#1e293b] hover:bg-slate-800 active:scale-[0.99] shadow-xs transition-all cursor-pointer"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>Baixar Resumo (.MD)</span>
+        </button>
+
+        <!-- Botão 3: Imprimir / Salvar PDF -->
+        <button
+          type="button"
+          id="btn-print-pdf"
+          class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-[#0f766e] bg-teal-50 hover:bg-teal-100 border border-[#0f766e]/30 active:scale-[0.99] transition-all cursor-pointer"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>Imprimir / Salvar PDF</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Customizado de Confirmação para Limpar Ficha (Substitui window.confirm) -->
+  <div
+    id="clear-modal"
+    class="no-print fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="clear-modal-title"
+  >
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 animate-fade-in">
+      <div class="flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <h3 id="clear-modal-title" class="text-base font-bold text-slate-900">Limpar toda a ficha?</h3>
+          <p class="text-sm text-slate-600 mt-1">
+            Todos os campos preenchidos e o rascunho salvo automaticamente serão apagados para iniciar uma nova doença.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          id="btn-cancel-clear"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          id="btn-confirm-clear"
+          class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer"
+        >
+          Sim, limpar ficha
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificação Discreta (Toast) -->
+  <div
+    id="toast-banner"
+    class="no-print fixed bottom-5 right-5 z-40 hidden items-center gap-2 bg-[#1e293b] text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-700"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="toast-message">Ação concluída</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Identificador único deste documento (garante que arquivos .html baixados não colidam no localStorage)
+      const docId = document.documentElement.getAttribute('data-doc-id') || 'template-padrao';
+      const STORAGE_KEY = 'clinica_medica_ficha_v1_' + docId;
+
+      const fields = Array.from(document.querySelectorAll('[data-field]'));
+      const saveStatusEl = document.getElementById('save-status');
+      const saveDotEl = document.getElementById('save-dot');
+      const progressCounterEl = document.getElementById('progress-counter');
+
+      const clearModal = document.getElementById('clear-modal');
+      const btnOpenClear = document.getElementById('btn-open-clear');
+      const btnCancelClear = document.getElementById('btn-cancel-clear');
+      const btnConfirmClear = document.getElementById('btn-confirm-clear');
+
+      const btnDownloadHtml = document.getElementById('btn-download-html');
+      const btnDownloadMd = document.getElementById('btn-download-md');
+      const btnPrintPdf = document.getElementById('btn-print-pdf');
+
+      const toastBanner = document.getElementById('toast-banner');
+      const toastMessage = document.getElementById('toast-message');
+      let toastTimer = null;
+      let saveDebounceTimer = null;
+
+      /**
+       * Exibe notificação toast não intrusiva no canto inferior direito
+       */
+      function showToast(message) {
+        if (!toastBanner || !toastMessage) return;
+        toastMessage.textContent = message;
+        toastBanner.classList.remove('hidden');
+        toastBanner.classList.add('flex');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toastBanner.classList.add('hidden');
+          toastBanner.classList.remove('flex');
+        }, 3000);
+      }
+
+      /**
+       * Ajusta a altura de um textarea automaticamente ao seu conteúdo
+       */
+      function autoResizeTextarea(el) {
+        if (!el || el.tagName !== 'TEXTAREA') return;
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+      }
+
+      /**
+       * Sincroniza o conteúdo de um campo para o elemento espelho de impressão
+       */
+      function syncFieldMirror(el) {
+        const key = el.getAttribute('data-field');
+        if (!key) return;
+        const mirror = document.querySelector('[data-mirror="' + key + '"]');
+        if (mirror) {
+          mirror.textContent = el.value;
+        }
+      }
+
+      /**
+       * Atualiza o contador de campos preenchidos no cabeçalho
+       */
+      function updateProgressCounter() {
+        const filled = fields.filter((f) => f.value.trim().length > 0).length;
+        if (progressCounterEl) {
+          progressCounterEl.textContent = filled + '/' + fields.length + ' campos';
+        }
+      }
+
+      /**
+       * Salva todos os valores no localStorage e atualiza o indicador visual
+       */
+      function saveToLocalStorage() {
+        try {
+          const payload = {};
+          fields.forEach((el) => {
+            const key = el.getAttribute('data-field');
+            if (key) payload[key] = el.value;
+          });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+
+          if (saveStatusEl && saveDotEl) {
+            saveDotEl.classList.remove('bg-amber-400');
+            saveDotEl.classList.add('bg-emerald-500');
+            saveStatusEl.textContent = 'Rascunho salvo automaticamente';
+          }
+        } catch (err) {
+          if (saveStatusEl) {
+            saveStatusEl.textContent = 'Modo offline (sem armazenamento local)';
+          }
+        }
+      }
+
+      /**
+       * Restaura dados do localStorage (se existirem) ou sincroniza valores já embutidos no HTML
+       */
+      function loadInitialData() {
+        let savedData = null;
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) savedData = JSON.parse(raw);
+        } catch (err) {
+          savedData = null;
+        }
+
+        fields.forEach((el) => {
+          const key = el.getAttribute('data-field');
+          if (savedData && typeof savedData[key] === 'string') {
+            el.value = savedData[key];
+          }
+          autoResizeTextarea(el);
+          syncFieldMirror(el);
+        });
+
+        updateProgressCounter();
+      }
+
+      /**
+       * Converte o nome da doença em um slug seguro para nomear arquivos
+       */
+      function getFileSlug() {
+        const rawName = (document.getElementById('doenca_nome')?.value || '').trim();
+        if (!rawName) return 'clinica-medica';
+        const normalized = rawName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        return normalized || 'clinica-medica';
+      }
+
+      /**
+       * Dispara o download de um Blob no navegador
+       */
+      function triggerFileDownload(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      /**
+       * Exporta a ficha completa como um arquivo .HTML independente com todos os valores embutidos
+       */
+      function exportAsStandaloneHtml() {
+        // Garante que os espelhos de impressão estejam sincronizados antes de clonar
+        fields.forEach((el) => syncFieldMirror(el));
+
+        const clonedDoc = document.documentElement.cloneNode(true);
+
+        // Gera novo ID único para que o arquivo baixado funcione de forma independente offline
+        const newDocId = 'saved-' + Date.now().toString(36);
+        clonedDoc.setAttribute('data-doc-id', newDocId);
+
+        // Atualiza o <title> com o nome da doença, se preenchido
+        const diseaseName = (document.getElementById('doenca_nome')?.value || '').trim();
+        const titleEl = clonedDoc.querySelector('title');
+        if (titleEl && diseaseName) {
+          titleEl.textContent = 'Ficha Clínica: ' + diseaseName;
+        }
+
+        // Embute os valores atuais diretamente nos atributos/conteúdos do DOM clonado
+        fields.forEach((originalEl) => {
+          const key = originalEl.getAttribute('data-field');
+          if (!key) return;
+          const clonedEl = clonedDoc.querySelector('[data-field="' + key + '"]');
+          if (!clonedEl) return;
+
+          if (clonedEl.tagName === 'TEXTAREA') {
+            clonedEl.textContent = originalEl.value;
+            clonedEl.style.height = originalEl.style.height || 'auto';
+          } else {
+            clonedEl.setAttribute('value', originalEl.value);
+          }
+
+          const clonedMirror = clonedDoc.querySelector('[data-mirror="' + key + '"]');
+          if (clonedMirror) {
+            clonedMirror.textContent = originalEl.value;
+          }
+        });
+
+        // Garante que modal e toast estejam ocultos no HTML exportado
+        const clonedModal = clonedDoc.querySelector('#clear-modal');
+        if (clonedModal) {
+          clonedModal.classList.add('hidden');
+          clonedModal.classList.remove('flex');
+        }
+        const clonedToast = clonedDoc.querySelector('#toast-banner');
+        if (clonedToast) {
+          clonedToast.classList.add('hidden');
+          clonedToast.classList.remove('flex');
+        }
+
+        const htmlContent = '<!DOCTYPE html>\n' + clonedDoc.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const filename = 'ficha-' + getFileSlug() + '.html';
+
+        triggerFileDownload(blob, filename);
+        showToast('Ficha salva como ' + filename);
+      }
+
+      /**
+       * Exporta a ficha formatada em Markdown limpo (.MD)
+       */
+      function exportAsMarkdown() {
+        const val = (id) => {
+          const v = (document.getElementById(id)?.value || '').trim();
+          return v || '_[Não preenchido]_';
+        };
+
+        const diseaseTitle = (document.getElementById('doenca_nome')?.value || '').trim() || '[NOME DA DOENÇA]';
+
+        const mdLines = [
+          `# FICHA DE CLÍNICA MÉDICA: ${diseaseTitle.toUpperCase()}`,
+          '',
+          `* **Área / Sistema:** ${val('area_sistema')}`,
+          `* **Diretriz-base:** ${val('diretriz_base')}`,
+          '',
+          '---',
+          '',
+          '## 1. Perfil Epidemiológico e Fatores de Risco',
+          `* **Paciente típico:** ${val('p1_paciente_tipico')}`,
+          `* **Fatores de risco principais:** ${val('p1_fatores_risco')}`,
+          `* **Gatilhos / Exposições:** ${val('p1_gatilhos')}`,
+          '',
+          '## 2. Fisiopatologia Aplicada (O "Porquê" Clínico)',
+          `* **Mecanismo central:** ${val('p2_mecanismo')}`,
+          `* **Correlação clínica com semiologia:** ${val('p2_correlacao')}`,
+          `* **Alvo terapêutico:** ${val('p2_alvo')}`,
+          '',
+          '## 3. Quadro Clínico: Achados Cardeais e Red Flags',
+          `* **Sintomas-guia na anamnese:** ${val('p3_sintomas')}`,
+          `* **Achados do exame físico:** ${val('p3_exame_fisico')}`,
+          `* **Sinais de alarme (Red Flags):** ${val('p3_red_flags')}`,
+          '',
+          '## 4. Diagnóstico e Diagnósticos Diferenciais',
+          `* **Exame inicial (Triagem / PS / UBS):** ${val('p4_exame_inicial')}`,
+          `* **Padrão-ouro (Confirmação):** ${val('p4_padrao_ouro')}`,
+          `* **Exames complementares de apoio:** ${val('p4_complementares')}`,
+          `* **Critérios / Escores diagnósticos:** ${val('p4_criterios')}`,
+          '* **Top 3 Diagnósticos Diferenciais:**',
+          `  1. **${val('p4_diff1_nome')}:** ${val('p4_diff1_distincao')}`,
+          `  2. **${val('p4_diff2_nome')}:** ${val('p4_diff2_distincao')}`,
+          `  3. **${val('p4_diff3_nome')}:** ${val('p4_diff3_distincao')}`,
+          '',
+          '## 5. Classificações que Mudam a Conduta',
+          `* **Escala / Estadiamento:** ${val('p5_escala')}`,
+          `* **Impacto prático na conduta / local de manejo:** ${val('p5_impacto')}`,
+          '',
+          '## 6. Tratamento e Metas Terapêuticas',
+          `* **Manejo na Fase Aguda / Emergência:** ${val('p6_fase_aguda')}`,
+          `* **Manejo Ambulatorial / Manutenção:** ${val('p6_manutencao')}`,
+          `* **Contraindicações absolutas / Alertas:** ${val('p6_contraindicacoes')}`,
+          `* **Metas terapêuticas numéricas:** ${val('p6_metas')}`,
+          '',
+          '## 7. Complicações e Seguimento',
+          `* **Complicações agudas:** ${val('p7_agudas')}`,
+          `* **Complicações crônicas:** ${val('p7_cronicas')}`,
+          `* **Monitoramento / Seguimento:** ${val('p7_monitoramento')}`,
+          '',
+          '---',
+          '',
+          '### Gatilho Rápido — Revisão Ativa',
+          `> **Caso típico:** ${val('gatilho_caso')} -> **Pedir:** ${val('gatilho_pedir')} -> **Conduta imediata:** ${val('gatilho_conduta')}`
+        ];
+
+        const blob = new Blob([mdLines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+        const filename = 'resumo-' + getFileSlug() + '.md';
+
+        triggerFileDownload(blob, filename);
+        showToast('Resumo exportado como ' + filename);
+      }
+
+      /**
+       * Prepara os espelhos de texto e aciona a caixa de impressão / Salvar como PDF
+       */
+      function printOrSavePdf() {
+        fields.forEach((el) => syncFieldMirror(el));
+        window.print();
+      }
+
+      /**
+       * Abre e fecha o modal de confirmação de limpeza
+       */
+      function openClearModal() {
+        if (!clearModal) return;
+        clearModal.classList.remove('hidden');
+        clearModal.classList.add('flex');
+        btnCancelClear?.focus();
+      }
+
+      function closeClearModal() {
+        if (!clearModal) return;
+        clearModal.classList.add('hidden');
+        clearModal.classList.remove('flex');
+      }
+
+      function clearAllFields() {
+        fields.forEach((el) => {
+          el.value = '';
+          if (el.tagName === 'TEXTAREA') {
+            el.style.height = '';
+            autoResizeTextarea(el);
+          }
+          syncFieldMirror(el);
+        });
+
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (err) {
+          // Ignora erro caso storage esteja restrito
+        }
+
+        updateProgressCounter();
+        closeClearModal();
+        showToast('Ficha limpa. Pronta para uma nova doença.');
+        document.getElementById('doenca_nome')?.focus();
+      }
+
+      // Listeners em todos os campos editáveis
+      fields.forEach((el) => {
+        el.addEventListener('input', () => {
+          autoResizeTextarea(el);
+          syncFieldMirror(el);
+          updateProgressCounter();
+
+          if (saveStatusEl && saveDotEl) {
+            saveDotEl.classList.remove('bg-emerald-500');
+            saveDotEl.classList.add('bg-amber-400');
+            saveStatusEl.textContent = 'Salvando alterações...';
+          }
+
+          clearTimeout(saveDebounceTimer);
+          saveDebounceTimer = setTimeout(saveToLocalStorage, 250);
+        });
+      });
+
+      // Reajusta altura dos textareas se a janela mudar de tamanho
+      window.addEventListener('resize', () => {
+        fields.forEach((el) => autoResizeTextarea(el));
+      });
+
+      // Garante sincronização antes de qualquer atalho Ctrl+P / Cmd+P
+      window.addEventListener('beforeprint', () => {
+        fields.forEach((el) => syncFieldMirror(el));
+      });
+
+      // Listeners dos botões de ação
+      btnOpenClear?.addEventListener('click', openClearModal);
+      btnCancelClear?.addEventListener('click', closeClearModal);
+      btnConfirmClear?.addEventListener('click', clearAllFields);
+
+      clearModal?.addEventListener('click', (e) => {
+        if (e.target === clearModal) closeClearModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && clearModal && !clearModal.classList.contains('hidden')) {
+          closeClearModal();
+        }
+      });
+
+      btnDownloadHtml?.addEventListener('click', exportAsStandaloneHtml);
+      btnDownloadMd?.addEventListener('click', exportAsMarkdown);
+      btnPrintPdf?.addEventListener('click', printOrSavePdf);
+
+      // Inicialização ao carregar a página
+      window.addEventListener('DOMContentLoaded', loadInitialData);
+      if (document.readyState !== 'loading') {
+        loadInitialData();
+      }
+    })();
+  </script>
+</body>
+</html>
